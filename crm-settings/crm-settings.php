@@ -38,6 +38,10 @@ class WeDevs_Settings_API_Test {
                 'title' => __( 'Notifications', 'hetas-crm-admin-settings' )
             ),
             array(
+                'id'    => 'price_list_settings',
+                'title' => __( 'Price List Settings', 'hetas-crm-admin-settings' )
+            ),
+            array(
                 'id'    => 'other_settings',
                 'title' => __( 'Other Settings', 'hetas-crm-admin-settings' )
             )
@@ -51,6 +55,7 @@ class WeDevs_Settings_API_Test {
      * @return array settings fields
      */
     public function get_settings_fields() {
+        
         $settings_fields = array(
             'notification_settings' => array(
                 array(
@@ -71,6 +76,16 @@ class WeDevs_Settings_API_Test {
                     'type' => 'textarea'
                 )
             ),
+            // 'price_list_settings' => array(
+            //     array(
+            //         'name'    => 'active_crm_price_list',
+            //         'label'   => __( 'Active CRM Price List', 'hetas-crm-admin-settings' ),
+            //         'desc'    => __( 'Where product amounts are collected from via the CRM', 'hetas-crm-admin-settings' ),
+            //         'type'    => 'select',
+            //         'options' => $active_crm_price_lists,
+            //         'default' => '',
+            //     ),
+            // ),
             // 'other_settings' => array(
             //     array(
             //         'name'    => 'color',
@@ -101,6 +116,25 @@ class WeDevs_Settings_API_Test {
             //     ),
             // )
         );
+
+        if(!empty($GLOBALS && isset($GLOBALS["plugin_page"]))) {
+            $current_page = $GLOBALS["plugin_page"];
+            if (class_exists('Hetas_Dynamics_crm_Public') && $current_page == 'crm-settings') {
+                $public_class = new Hetas_Dynamics_crm_Public('CRM Public', '1.0.0');
+                $active_crm_price_lists = $public_class->get_price_levels_callback();
+                $settings_fields['price_list_settings'] = array(
+                    array(
+                        'name'    => 'active_crm_price_list',
+                        'label'   => __( 'Active CRM Price List', 'hetas-crm-admin-settings' ),
+                        'desc'    => __( 'Where product amounts are collected from via the CRM', 'hetas-crm-admin-settings' ),
+                        'type'    => 'select',
+                        'options' => $active_crm_price_lists,
+                        'default' => '',
+                    ),
+                );
+            }
+        }
+
 
         return $settings_fields;
     }
